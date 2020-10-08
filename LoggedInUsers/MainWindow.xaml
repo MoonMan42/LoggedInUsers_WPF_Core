@@ -5,14 +5,44 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:LoggedInUsers"
         mc:Ignorable="d"
-        Title="Get The User" Height="150" Width="200">
-    <Grid>
-        <TextBox x:Name="MachineIdTextBox" HorizontalAlignment="Left" Margin="10,10,0,0" Focusable="True" TextWrapping="Wrap" VerticalAlignment="Top" Width="120"  KeyDown="ComputerSearch_KeyDown"/>
-        <Label x:Name="UserLabel" Content="User" HorizontalAlignment="Left" Margin="10,33,0,0" VerticalAlignment="Top"/>
-        <Label x:Name="PingableLable" Content="Pingable" HorizontalAlignment="Left" Margin="10,64,0,0" VerticalAlignment="Top" FontWeight="Bold"/>
+        ResizeMode="CanMinimize"
+        Background="LightGray"
+        Title="Find The User" Height="200" Width="200">
+    <Grid Margin="5">
+       
 
-        <Button Content="Search" HorizontalAlignment="Left" Margin="135,10,0,0" VerticalAlignment="Top" Click="ComputerSearch_Click"/>
-        <Button Content="Copy" HorizontalAlignment="Left" Margin="135,36,0,0" VerticalAlignment="Top" Click="CopyUser_Click"/>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*" />
+            <ColumnDefinition Width="*" />
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+        
+        <!--Row 0-->
+        <TextBox x:Name="MachineIdTextBox" 
+                 Grid.Column="0" Grid.Row="0" Grid.ColumnSpan="2"                 
+                 Focusable="True"   KeyDown="ComputerSearch_KeyDown" Margin="5 10"/>
+
+        <!--Row 1-->
+        <Button Content="Clear" Grid.Column="0" Grid.Row="1" Click="Clear_Click" Margin="5 10"/>
+        <Button Content="Search" Grid.Column="1" Grid.Row="1" Click="ComputerSearch_Click" Margin="5 10"/>
+        
+        <!--Row 2-->
+        <Label x:Name="UserLabel" Content="N/A"
+               Grid.Column="0" Grid.Row="2"/>
+        <Button Content="Copy" Grid.Column="1" Grid.Row="2" Click="CopyUser_Click" Margin="5 10"/>
+
+        <!--Row 3-->
+        <Label x:Name="PingableLable" Grid.Column="0" Grid.Row="3" FontWeight="Bold" Content="Pingable?"/>
+
+
+
+
+       
 
     </Grid>
 </Window>
