@@ -64,6 +64,7 @@ namespace LoggedInUsers
 
             ping.SendAsync(machineName, 1000, buffer, options, waiter);
 
+
         }
 
         private void PingCompletedCallback(object sender, PingCompletedEventArgs e)
@@ -125,17 +126,22 @@ namespace LoggedInUsers
             string location = @"SOFTWARE\Microsoft\Windows\CurrentVersion\Authentication\LogonUI";
             var registryView = Environment.Is64BitOperatingSystem ? RegistryView.Registry64 : RegistryView.Registry32;
 
-
-            using (var hive = RegistryKey.OpenRemoteBaseKey(RegistryHive.LocalMachine, machineName, registryView))
+            try
             {
-                using (var key = hive.OpenSubKey(location))
+                using (var hive = RegistryKey.OpenRemoteBaseKey(RegistryHive.LocalMachine, machineName, registryView))
                 {
-                    var item = key.GetValue("LastLoggedOnUser");
-                    string itemValue = item == null ? "No Logon Found" : item.ToString();
-                    UserLabel.Content = itemValue;
+                    using (var key = hive.OpenSubKey(location))
+                    {
+                        var item = key.GetValue("LastLoggedOnUser");
+                        string itemValue = item == null ? "No Logon Found" : item.ToString();
+                        UserLabel.Content = itemValue;
+                    }
                 }
             }
-
+            catch
+            {
+                UserLabel.Content = "No Logon Found";
+            }
 
 
         }
