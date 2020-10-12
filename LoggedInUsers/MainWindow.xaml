@@ -7,7 +7,7 @@
         mc:Ignorable="d"
         ResizeMode="CanMinimize"
         Background="LightGray"
-        Title="Find The User" Height="200" Width="200">
+        Title="Find The User" Height="200" Width="300">
     <Grid Margin="5">
        
 

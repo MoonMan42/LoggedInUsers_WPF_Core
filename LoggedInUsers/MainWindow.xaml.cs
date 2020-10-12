@@ -43,7 +43,11 @@ namespace LoggedInUsers
 
         private void CopyUser_Click(object sender, RoutedEventArgs e)
         {
-            Clipboard.SetText(UserLabel.Content.ToString().Replace(@"NGHS\", ""));
+            string results = UserLabel.Content.ToString();
+            if (results != null)
+            {
+                Clipboard.SetDataObject(results.Replace(@"NGHS\", "").Replace(" ", ""));
+            }
         }
 
         private void IsPingable()
@@ -62,9 +66,16 @@ namespace LoggedInUsers
 
             string machineName = MachineIdTextBox.Text;
 
-            ping.SendAsync(machineName, 1000, buffer, options, waiter);
-
-
+            if (machineName != null && machineName.Length < 0)
+            {
+                ping.SendAsync(machineName, 1000, buffer, options, waiter);
+            }
+            else
+            {
+                UserLabel.Content = "N/A";
+                PingableLable.Content = "Nothing Entered";
+                PingableLable.Foreground = new SolidColorBrush(Colors.Red);
+            }
         }
 
         private void PingCompletedCallback(object sender, PingCompletedEventArgs e)
@@ -103,8 +114,8 @@ namespace LoggedInUsers
         {
             if (reply == null)
             {
-                UserLabel.Content = $"N/A";
-                PingableLable.Content = "FALSE";
+                UserLabel.Content = "N/A";
+                PingableLable.Content = "FALSE PING";
                 PingableLable.Foreground = new SolidColorBrush(Colors.Red);
                 return;
             }
@@ -112,7 +123,7 @@ namespace LoggedInUsers
             if (reply.Status == IPStatus.Success)
             {
                 GetUser();
-                PingableLable.Content = "TRUE";
+                PingableLable.Content = "PING";
                 PingableLable.Foreground = new SolidColorBrush(Colors.Green);
             }
         }
