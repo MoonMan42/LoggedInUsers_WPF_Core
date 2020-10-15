@@ -7,7 +7,7 @@
         mc:Ignorable="d"
         ResizeMode="CanMinimize"
         Background="LightGray"
-        Title="Find The User" Height="200" Width="300">
+        Title="Find The User" Height="260" Width="300">
     <Grid Margin="5">
        
 
@@ -19,12 +19,14 @@
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
         
         <!--Row 0-->
         <TextBox x:Name="MachineIdTextBox" 
-                 Grid.Column="0" Grid.Row="0" Grid.ColumnSpan="2"                 
+                 Grid.Column="0" Grid.Row="0" Grid.ColumnSpan="2"   
                  Focusable="True"   KeyDown="ComputerSearch_KeyDown" Margin="5 10"/>
 
         <!--Row 1-->
@@ -37,12 +39,20 @@
         <Button Content="Copy" Grid.Column="1" Grid.Row="2" Click="CopyUser_Click" Margin="5 10"/>
 
         <!--Row 3-->
-        <Label x:Name="PingableLable" Grid.Column="0" Grid.Row="3" FontWeight="Bold" Content="Pingable?"/>
+        <Label x:Name="UpTimeLabel" Grid.Column="0" Grid.Row="3" FontWeight="Bold" Content="Uptime"/>
+
+        <!--Row 4-->
+        <Label x:Name="PingableLable" Grid.Column="0" Grid.Row="4" FontWeight="Bold" Content="Pingable?"/>
+
+        <!-- row 5 -->
+        <Button Content="Restart" Grid.Column="0" Grid.Row="5" 
+                Background="IndianRed"
+                Click="RestartComputer_Click" Margin="5 10"/>
+        <Button Content="Ping Log" Grid.Column="1" Grid.Row="5"
+                Click="ContinuePing_Click" Margin="5 10"/>
 
 
 
-
-       
 
     </Grid>
 </Window>

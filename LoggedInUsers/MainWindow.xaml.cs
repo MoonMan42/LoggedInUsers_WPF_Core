@@ -6,6 +6,9 @@ using System.Threading;
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Media;
+using System.Management;
+using System.Linq;
+using System.Diagnostics;
 
 namespace LoggedInUsers
 {
@@ -50,6 +53,34 @@ namespace LoggedInUsers
             }
         }
 
+        private async void RestartComputer_Click(object sender, RoutedEventArgs e)
+        {
+            var machine = MachineIdTextBox.Text;
+            if (machine != null && machine.Length > 0)
+            {
+                Process.Start("shutdown", $@" /r /f /m \\{MachineIdTextBox.Text} /t 0");
+            }
+            else
+            {
+                MessageBox.Show("No computer entered.");
+            }
+        }
+
+        private void ContinuePing_Click(object sender, RoutedEventArgs e)
+        {
+            var machine = MachineIdTextBox.Text;
+            if (machine != null && machine.Length > 0)
+            {
+                Process.Start("ping.exe", $"-t {machine}");
+            }
+            else
+            {
+                MessageBox.Show("No computer entered.");
+            }
+
+        }
+
+
         private void IsPingable()
         {
             // set display to show running
@@ -66,7 +97,7 @@ namespace LoggedInUsers
 
             string machineName = MachineIdTextBox.Text;
 
-            if (machineName != null && machineName.Length < 0)
+            if (machineName != null && machineName.Length != 0)
             {
                 ping.SendAsync(machineName, 1000, buffer, options, waiter);
             }
@@ -101,6 +132,8 @@ namespace LoggedInUsers
                 ((AutoResetEvent)e.UserState).Set();
             }
 
+
+
             PingReply reply = e.Reply;
 
             DisplayReply(reply);
@@ -122,17 +155,20 @@ namespace LoggedInUsers
 
             if (reply.Status == IPStatus.Success)
             {
-                GetUser();
+
+                string machineName = MachineIdTextBox.Text;
+
+                GetUser(machineName); // get user info from computer. 
+                GetUptime(machineName); // get computer uptime
+
+
                 PingableLable.Content = "PING";
                 PingableLable.Foreground = new SolidColorBrush(Colors.Green);
             }
         }
 
-        private void GetUser()
+        private void GetUser(string machineName)
         {
-            string machineName = MachineIdTextBox.Text;
-
-
 
             string location = @"SOFTWARE\Microsoft\Windows\CurrentVersion\Authentication\LogonUI";
             var registryView = Environment.Is64BitOperatingSystem ? RegistryView.Registry64 : RegistryView.Registry32;
@@ -155,6 +191,20 @@ namespace LoggedInUsers
             }
 
 
+        }
+
+        private void GetUptime(string machineName)
+        {
+            var scope = new ManagementScope(string.Format(@$"\\{machineName}\root\cimv2"));
+            scope.Connect();
+
+            var query = new ObjectQuery("SELECT LastBootUpTime FROM Win32_OperatingSystem");
+
+            var searcher = new ManagementObjectSearcher(scope, query);
+
+            var firstResult = searcher.Get().OfType<ManagementObject>().First();
+
+            UpTimeLabel.Content = ManagementDateTimeConverter.ToDateTime(firstResult["LastBootUpTime"].ToString());
         }
 
 
