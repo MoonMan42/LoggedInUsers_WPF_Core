@@ -62,7 +62,8 @@ namespace LoggedInUsers
             }
             else
             {
-                MessageBox.Show("No computer entered.");
+                PingableLable.Content = "Nothing Entered";
+                PingableLable.Foreground = new SolidColorBrush(Colors.Red);
             }
         }
 
@@ -75,7 +76,8 @@ namespace LoggedInUsers
             }
             else
             {
-                MessageBox.Show("No computer entered.");
+                PingableLable.Content = "Nothing Entered";
+                PingableLable.Foreground = new SolidColorBrush(Colors.Red);
             }
 
         }
