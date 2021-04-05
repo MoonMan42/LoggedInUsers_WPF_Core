@@ -4,6 +4,10 @@
              xmlns:local="clr-namespace:LoggedInUsers"
              StartupUri="MainWindow.xaml">
     <Application.Resources>
+        <Style TargetType="Button">
+            <Setter Property="HorizontalAlignment" Value="Stretch" />
+            <Setter Property="Margin" Value="10" />                   
+        </Style>
          
     </Application.Resources>
 </Application>

@@ -7,14 +7,15 @@
         mc:Ignorable="d"
         ResizeMode="CanMinimize"
         Background="LightGray"
-        Title="Find The User" Height="425" Width="320">
+        FontSize="12"
+        Title="Find The User" Height="425" Width="350">
     <DockPanel>
         <Menu DockPanel.Dock="Top"  Background="LightGray">
             <MenuItem Header="_File">
                 <MenuItem Header="Clear" Click="Clear_Click"/>
                 <MenuItem Header="Close" Click="Close_Click"/>
             </MenuItem>
-            
+
             <MenuItem Header="_Edit">
                 <MenuItem Header="VNC Option">
                     <MenuItem Name="Ultra" Header="Ultra" Click="VNCOption_Click"/>
@@ -27,14 +28,15 @@
                     <MenuItem Name="Vnc75"  Header="75%" IsCheckable="True" Click="VNCScreenSize_Click"/>
                     <MenuItem Name="Vnc50"  Header="50%" IsCheckable="True" Click="VNCScreenSize_Click"/>
                 </MenuItem>
-               
+
             </MenuItem>
         </Menu>
 
         <Grid Margin="5">
 
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="Auto" />
                 <ColumnDefinition Width="*" />
             </Grid.ColumnDefinitions>
             <Grid.RowDefinitions>
@@ -54,52 +56,64 @@
                      Grid.Column="0" Grid.Row="0" Grid.ColumnSpan="2" Margin="5"
                  />
 
+            <ListView x:Name="ProcessBox" Grid.Column="2" Grid.Row="0" Grid.RowSpan="8" >
+                <ListView.View>
+                    <GridView>
+                        <GridViewColumn Header="Process" Width="Auto" DisplayMemberBinding="{Binding ProcessName}"/>
+                    </GridView>
+                </ListView.View>
+                <ListView.ContextMenu>
+                    <ContextMenu>
+                        <MenuItem Header="Stop" Click="StopSelectedProcess_Click"/>
+                    </ContextMenu>
+                </ListView.ContextMenu>
+            </ListView>
 
 
             <!--Row 1-->
-            <Button Content="Ping Log" Grid.Column="0" Grid.Row="1"
-                Click="ContinuePing_Click" Margin="10"/>
-            <Button Content="Search" Grid.Column="1" Grid.Row="1" Click="ComputerSearch_Click" Margin="10"/>
+            <Button Content="Ping" Grid.Column="0" Grid.Row="1"
+                Click="ContinuePing_Click" />
+            <Button Content="Search" Grid.Column="1" Grid.Row="1" Click="ComputerSearch_Click" />
 
             <!--Row 2-->
             <Label x:Name="UserLabel" Content="?"
-               Grid.Column="0" Grid.Row="2"/>
-            <Button Content="Copy" Grid.Column="1" Grid.Row="2" Click="CopyUser_Click" Margin="10"/>
+               Grid.Column="0" Grid.Row="1" Margin="0,50,0,50" Grid.RowSpan="3"/>
+            <Button Content="Copy" Grid.Column="1" Grid.Row="2" Click="CopyUser_Click" />
 
             <!--Row 3-->
             <Label x:Name="DnsLabel" Content="?"
                Grid.Column="0" Grid.Row="3"/>
-            <Button Content="Copy" Grid.Column="1" Grid.Row="3" Click="CopyDns_Click" Margin="10"/>
+            <Button Content="Copy" Grid.Column="1" Grid.Row="3" Click="CopyDns_Click" />
 
             <!-- Row 4 -->
-            <Label x:Name="UpTimeLabel" Grid.Column="0" Grid.Row="4" FontWeight="Bold" Content="Uptime"/>
+            <Label x:Name="UpTimeLabel" Grid.Column="0" Grid.Row="3" FontWeight="Bold" Content="Uptime" Margin="0,50,0,50" Grid.RowSpan="3"/>
 
             <!--Row 5-->
 
             <!-- row 6 -->
             <Button Content="Restart" Grid.Column="0" Grid.Row="5" 
                 Background="IndianRed"
-                Click="RestartComputer_Click" Margin="10"/>
+                Click="RestartComputer_Click" />
             <Button x:Name="SCCM" Content="SCCM" Grid.Column="1" Grid.Row="5" 
-                Click="RDPOpen_Click" Margin="10"/>
+                Click="RDPOpen_Click" />
 
 
             <!-- Row 7 -->
             <Button x:Name="Goverlan" Content="Goverlan" 
                 Grid.Column="0" Grid.Row="6"
-                Margin="10" Click="RDPOpen_Click"/>
+                 Click="RDPOpen_Click"/>
             <Button x:Name="VNC" Content="VNC" 
                 Grid.Column="1" Grid.Row="6"
-                Margin="10" Click="RDPOpen_Click"/>
+                 Click="RDPOpen_Click"/>
 
 
             <!-- Row 8 -->
             <Button x:Name="RDP" Content="RDP" 
                 Grid.Column="0" Grid.Row="7"
-                Margin="10" Click="RDPOpen_Click"/>
+                 Click="RDPOpen_Click"/>
             <Button x:Name="BigFix" Content="BigFix" 
                 Grid.Column="1" Grid.Row="7"
-                Margin="10" Click="RDPOpen_Click"/>
+                 Click="RDPOpen_Click"/>
 
         </Grid>
     </DockPanel>

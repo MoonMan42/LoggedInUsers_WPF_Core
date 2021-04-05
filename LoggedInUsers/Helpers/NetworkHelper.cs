@@ -5,6 +5,8 @@ using System.Management;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
+using System.Collections.Generic;
+using System.Diagnostics;
 
 namespace LoggedInUsers.Helpers
 {
@@ -116,6 +118,29 @@ namespace LoggedInUsers.Helpers
             }
         }
 
+        /// <summary>
+        /// Get Process List from another computer. 
+        /// </summary>
+        /// <param name="machineName"></param>
+        /// <returns></returns>
+        internal static List<Process> GetProcesses(string machineName)
+        {
+            List<Process> result = Process.GetProcesses(machineName).ToList();
+
+
+            return result.OrderBy(r => r.ProcessName).ToList();
+        }
+
+        /// <summary>
+        ///  Kills a process on remote computer by id.
+        /// </summary>
+        /// <param name="machineName"></param>
+        /// <param name="processId"></param>
+        internal static void StopProcess(string machineName, int processId)
+        {
+            Process process = Process.GetProcessById(processId, machineName);
+            process.Close();
+        }
     }
 
 }

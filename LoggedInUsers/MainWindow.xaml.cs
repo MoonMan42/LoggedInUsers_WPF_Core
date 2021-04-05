@@ -5,6 +5,7 @@ using LoggedInUsers.Helpers;
 using LoggedInUsers.Properties;
 using System.Windows.Controls;
 using System.ComponentModel;
+using System.Collections.Generic;
 
 namespace LoggedInUsers
 {
@@ -32,7 +33,10 @@ namespace LoggedInUsers
             // setup background worker to retrieve computer info
             bgWorker.DoWork += GetSignedInUSer_Work;
             bgWorker.DoWork += GetMachineUptime_Work;
+            bgWorker.DoWork += GetProcess_Work;
         }
+
+
 
         private async void SearchAndOpenComputer()
         {
@@ -357,11 +361,27 @@ namespace LoggedInUsers
             });
         }
 
-
+        private void GetProcess_Work(object sender, DoWorkEventArgs e)
+        {
+            Dispatcher.Invoke(() =>
+            {
+                ProcessBox.ItemsSource = NetworkHelper.GetProcesses(MachineIdTextBox.Text); ;
+            });
+        }
 
         #endregion
 
+        private void StopSelectedProcess_Click(object sender, RoutedEventArgs e)
+        {
+            Process p = (Process)ProcessBox.SelectedItem;
+            string computerName = MachineIdTextBox.Text;
 
+            // kill process
+            NetworkHelper.StopProcess(computerName, p.Id);
+
+            // refresh the list.
+            ProcessBox.ItemsSource = NetworkHelper.GetProcesses(MachineIdTextBox.Text);
+        }
     }
 
 }
