@@ -7,52 +7,100 @@
         mc:Ignorable="d"
         ResizeMode="CanMinimize"
         Background="LightGray"
-        Title="Find The User" Height="260" Width="300">
-    <Grid Margin="5">
-       
+        Title="Find The User" Height="425" Width="320">
+    <DockPanel>
+        <Menu DockPanel.Dock="Top"  Background="LightGray">
+            <MenuItem Header="_File">
+                <MenuItem Header="Clear" Click="Clear_Click"/>
+                <MenuItem Header="Close" Click="Close_Click"/>
+            </MenuItem>
+            
+            <MenuItem Header="_Edit">
+                <MenuItem Header="VNC Option">
+                    <MenuItem Name="Ultra" Header="Ultra" Click="VNCOption_Click"/>
+                    <MenuItem Name="GoverlanVNC" Header="Goverlan VNC" Click="VNCOption_Click"/>
+                </MenuItem>
+                <MenuItem x:Name="ScreenSizeOptions" Header="VNC" >
+                    <MenuItem Name="Vnc100" Header="100%" IsCheckable="True" Click="VNCScreenSize_Click"/>
+                    <MenuItem Name="Vnc85"  Header="85%" IsCheckable="True" Click="VNCScreenSize_Click"/>
+                    <MenuItem Name="Vnc80"  Header="80%" IsCheckable="True" Click="VNCScreenSize_Click"/>
+                    <MenuItem Name="Vnc75"  Header="75%" IsCheckable="True" Click="VNCScreenSize_Click"/>
+                    <MenuItem Name="Vnc50"  Header="50%" IsCheckable="True" Click="VNCScreenSize_Click"/>
+                </MenuItem>
+               
+            </MenuItem>
+        </Menu>
 
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="*" />
-            <ColumnDefinition Width="*" />
-        </Grid.ColumnDefinitions>
-        <Grid.RowDefinitions>
-            <RowDefinition Height="Auto" />
-            <RowDefinition Height="Auto" />
-            <RowDefinition Height="Auto" />
-            <RowDefinition Height="Auto" />
-            <RowDefinition Height="Auto" />
-            <RowDefinition Height="*" />
-        </Grid.RowDefinitions>
-        
-        <!--Row 0-->
-        <TextBox x:Name="MachineIdTextBox" 
-                 Grid.Column="0" Grid.Row="0" Grid.ColumnSpan="2"   
-                 Focusable="True"   KeyDown="ComputerSearch_KeyDown" Margin="5 10"/>
+        <Grid Margin="5">
 
-        <!--Row 1-->
-        <Button Content="Clear" Grid.Column="0" Grid.Row="1" Click="Clear_Click" Margin="5 10"/>
-        <Button Content="Search" Grid.Column="1" Grid.Row="1" Click="ComputerSearch_Click" Margin="5 10"/>
-        
-        <!--Row 2-->
-        <Label x:Name="UserLabel" Content="N/A"
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition />
+                <RowDefinition />
+                <RowDefinition />
+                <RowDefinition/>
+                <RowDefinition />
+                <RowDefinition />
+                <RowDefinition />
+                <RowDefinition Height="Auto" />
+            </Grid.RowDefinitions>
+
+            <!--Row 0-->
+            <TextBox x:Name="MachineIdTextBox" Focusable="True"   KeyDown="ComputerSearch_KeyDown" 
+                     Grid.Column="0" Grid.Row="0" Grid.ColumnSpan="2" Margin="5"
+                 />
+
+
+
+            <!--Row 1-->
+            <Button Content="Ping Log" Grid.Column="0" Grid.Row="1"
+                Click="ContinuePing_Click" Margin="10"/>
+            <Button Content="Search" Grid.Column="1" Grid.Row="1" Click="ComputerSearch_Click" Margin="10"/>
+
+            <!--Row 2-->
+            <Label x:Name="UserLabel" Content="?"
                Grid.Column="0" Grid.Row="2"/>
-        <Button Content="Copy" Grid.Column="1" Grid.Row="2" Click="CopyUser_Click" Margin="5 10"/>
+            <Button Content="Copy" Grid.Column="1" Grid.Row="2" Click="CopyUser_Click" Margin="10"/>
 
-        <!--Row 3-->
-        <Label x:Name="UpTimeLabel" Grid.Column="0" Grid.Row="3" FontWeight="Bold" Content="Uptime"/>
+            <!--Row 3-->
+            <Label x:Name="DnsLabel" Content="?"
+               Grid.Column="0" Grid.Row="3"/>
+            <Button Content="Copy" Grid.Column="1" Grid.Row="3" Click="CopyDns_Click" Margin="10"/>
 
-        <!--Row 4-->
-        <Label x:Name="PingableLable" Grid.Column="0" Grid.Row="4" FontWeight="Bold" Content="Pingable?"/>
+            <!-- Row 4 -->
+            <Label x:Name="UpTimeLabel" Grid.Column="0" Grid.Row="4" FontWeight="Bold" Content="Uptime"/>
 
-        <!-- row 5 -->
-        <Button Content="Restart" Grid.Column="0" Grid.Row="5" 
+            <!--Row 5-->
+
+            <!-- row 6 -->
+            <Button Content="Restart" Grid.Column="0" Grid.Row="5" 
                 Background="IndianRed"
-                Click="RestartComputer_Click" Margin="5 10"/>
-        <Button Content="Ping Log" Grid.Column="1" Grid.Row="5"
-                Click="ContinuePing_Click" Margin="5 10"/>
+                Click="RestartComputer_Click" Margin="10"/>
+            <Button x:Name="SCCM" Content="SCCM" Grid.Column="1" Grid.Row="5" 
+                Click="RDPOpen_Click" Margin="10"/>
 
 
+            <!-- Row 7 -->
+            <Button x:Name="Goverlan" Content="Goverlan" 
+                Grid.Column="0" Grid.Row="6"
+                Margin="10" Click="RDPOpen_Click"/>
+            <Button x:Name="VNC" Content="VNC" 
+                Grid.Column="1" Grid.Row="6"
+                Margin="10" Click="RDPOpen_Click"/>
 
 
-    </Grid>
+            <!-- Row 8 -->
+            <Button x:Name="RDP" Content="RDP" 
+                Grid.Column="0" Grid.Row="7"
+                Margin="10" Click="RDPOpen_Click"/>
+            <Button x:Name="BigFix" Content="BigFix" 
+                Grid.Column="1" Grid.Row="7"
+                Margin="10" Click="RDPOpen_Click"/>
+
+        </Grid>
+    </DockPanel>
 </Window>

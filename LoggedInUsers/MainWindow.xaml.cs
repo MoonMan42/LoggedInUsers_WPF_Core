@@ -1,47 +1,225 @@
-﻿using Microsoft.Win32;
-using System;
-using System.Net.NetworkInformation;
-using System.Text;
-using System.Threading;
-using System.Windows;
+﻿using System.Windows;
 using System.Windows.Input;
-using System.Windows.Media;
-using System.Management;
-using System.Linq;
 using System.Diagnostics;
+using LoggedInUsers.Helpers;
+using LoggedInUsers.Properties;
+using System.Windows.Controls;
+using System.ComponentModel;
 
 namespace LoggedInUsers
 {
-    /// <summary>
-    /// Interaction logic for MainWindow.xaml
-    /// </summary>
+
     public partial class MainWindow : Window
     {
+        private int vncScreenSize;
+        private string _vncOption;
+
+        private BackgroundWorker bgWorker = new BackgroundWorker();
+
         public MainWindow()
         {
             InitializeComponent();
+
+            // get vncScreenSize
+            vncScreenSize = Settings.Default.VncScreenSize;
+            _vncOption = Settings.Default.VncOption;
+
+            // check the related fields
+            LoadVNCScreenSize();
+            LoadVNCSelectedOption();
+
+
+            // setup background worker to retrieve computer info
+            bgWorker.DoWork += GetSignedInUSer_Work;
+            bgWorker.DoWork += GetMachineUptime_Work;
         }
 
-        private void ComputerSearch_KeyDown(object sender, System.Windows.Input.KeyEventArgs e)
+        private async void SearchAndOpenComputer()
         {
+
+            if (MachineIdTextBox.Text != null && MachineIdTextBox.Text != "")
+            {
+
+                string machineName = NetworkHelper.GetDns(MachineIdTextBox.Text.Replace(" ", "").ToLower());
+                DnsLabel.Content = machineName;
+
+                if (await NetworkHelper.IsPingable(machineName))
+                {
+                    char[] machine = machineName.ToCharArray(); // resolve the dns of the computer
+
+                    string shortName = $"{machine[6]}{machine[7]}";
+
+                    if (shortName.Equals("mc") || shortName.Equals("tc"))
+                    {
+                        UserLabel.Content = "Thin Client";
+                        if (_vncOption == "GoverlanVNC")
+                        {
+                            RDPHelper.GoverlanVNCHelper(machineName);
+                        }
+                        else if (_vncOption == "Ultra")
+                        {
+                            RDPHelper.VNCHelper(machineName, vncScreenSize);
+                        }
+                    }
+                    else
+                    {
+                        RDPHelper.GoverlanHelper(machineName);
+                        bgWorker.RunWorkerAsync(); // find the user background task
+                    }
+                }
+                else
+                {
+                    DnsLabel.Content = "Computer does not ping.";
+                }
+            }
+            else
+            {
+                DnsLabel.Content = "Nothing entered.";
+            }
+        }
+
+        private void ComputerSearch_KeyDown(object sender, KeyEventArgs e)
+        {
+
             if (e.Key == Key.Enter)
             {
-                IsPingable();
+                SearchAndOpenComputer();
             }
 
         }
 
-        private void ComputerSearch_Click(object sender, RoutedEventArgs e)
+        #region MenuHeader
+        private void VNCScreenSize_Click(object sender, RoutedEventArgs e)
         {
-            IsPingable();
+            // get the checked option
+            MenuItem m = sender as MenuItem;
+            vncScreenSize = int.Parse(m.Header.ToString().Replace("%", ""));
+
+            // clear all values 
+            Vnc100.IsChecked = false;
+            Vnc85.IsChecked = false;
+            Vnc80.IsChecked = false;
+            Vnc75.IsChecked = false;
+            Vnc50.IsChecked = false;
+
+            // check the saved one from settings
+            m.IsChecked = true;
+
+            // save value to settings for next use
+            Settings.Default.VncScreenSize = vncScreenSize;
+            Settings.Default.Save();
+        }
+
+        private void VNCOption_Click(object sender, RoutedEventArgs e)
+        {
+            MenuItem m = sender as MenuItem;
+
+            // clear all values
+            GoverlanVNC.IsChecked = false;
+            Ultra.IsChecked = false;
+
+            // check the option again and save
+            m.IsChecked = true;
+
+            // save settings
+            _vncOption = m.Name;
+            Settings.Default.VncOption = _vncOption;
+            Settings.Default.Save();
+        }
+
+        private void Close_Click(object sender, RoutedEventArgs e)
+        {
+            Close();
+        }
+
+        private void LoadVNCScreenSize()
+        {
+            if (vncScreenSize == 100)
+            {
+                Vnc100.IsChecked = true;
+            }
+            else if (vncScreenSize == 85)
+            {
+                Vnc85.IsChecked = true;
+            }
+            else if (vncScreenSize == 80)
+            {
+                Vnc80.IsChecked = true;
+            }
+            else if (vncScreenSize == 75)
+            {
+                Vnc75.IsChecked = true;
+            }
+            else if (vncScreenSize == 50)
+            {
+                Vnc50.IsChecked = true;
+            }
+            else
+            {
+                vncScreenSize = 85;
+                Vnc85.IsChecked = true;
+            }
+        }
+
+        private void LoadVNCSelectedOption()
+        {
+            switch (_vncOption)
+            {
+                case "GoverlanVNC":
+                    GoverlanVNC.IsChecked = true;
+                    break;
+                case "Ultra":
+                    Ultra.IsChecked = true;
+                    break;
+                default:
+                    GoverlanVNC.IsChecked = true;
+                    break;
+            }
+        }
+        #endregion
+
+        #region Buttons
+        private async void ComputerSearch_Click(object sender, RoutedEventArgs e)
+        {
+
+            //SearchAndOpenComputer();
+            if (MachineIdTextBox.Text != null && MachineIdTextBox.Text != "")
+            {
+
+                string machineName = NetworkHelper.GetDns(MachineIdTextBox.Text.Replace(" ", "").ToLower());
+                DnsLabel.Content = machineName;
+
+                if (await NetworkHelper.IsPingable(machineName))
+                {
+                    char[] machine = machineName.ToCharArray(); // resolve the dns of the computer
+
+                    string shortName = $"{machine[6]}{machine[7]}";
+
+                    if (shortName.Equals("mc") || shortName.Equals("tc"))
+                    {
+                        UserLabel.Content = "Thin Client";
+
+                    }
+                    else
+                    {
+
+                        bgWorker.RunWorkerAsync(); // find the user background task
+                    }
+                }
+                else
+                {
+                    DnsLabel.Content = "Computer does not ping.";
+                }
+            }
+            else
+            {
+                DnsLabel.Content = "Nothing entered.";
+            }
         }
 
         private void Clear_Click(object sender, RoutedEventArgs e)
         {
-            MachineIdTextBox.Text = "";
-            UserLabel.Content = "N/A";
-            PingableLable.Content = "N/A";
-            PingableLable.Foreground = new SolidColorBrush(Colors.Black);
+            ClearDisplay();
         }
 
         private void CopyUser_Click(object sender, RoutedEventArgs e)
@@ -53,164 +231,137 @@ namespace LoggedInUsers
             }
         }
 
-        private async void RestartComputer_Click(object sender, RoutedEventArgs e)
+        private void CopyDns_Click(object sender, RoutedEventArgs e)
+        {
+            string results = DnsLabel.Content.ToString();
+
+            if (results != null)
+            {
+                Clipboard.SetDataObject(results);
+            }
+        }
+
+        private void RestartComputer_Click(object sender, RoutedEventArgs e)
         {
             var machine = MachineIdTextBox.Text;
             if (machine != null && machine.Length > 0)
             {
-                Process.Start("shutdown", $@" /r /f /m \\{MachineIdTextBox.Text} /t 0");
+
+
+                MessageBoxResult result = MessageBox.Show($"Are you sure you want to restart {machine}", "Confirmation", MessageBoxButton.YesNo);
+                switch (result)
+                {
+                    case MessageBoxResult.Yes:
+                        Process p = new Process();
+                        ProcessStartInfo startInfo = new ProcessStartInfo();
+                        startInfo.WindowStyle = ProcessWindowStyle.Hidden;
+                        startInfo.FileName = "cmd.exe";
+                        startInfo.Arguments = $"/C shutdown /r /m {machine} /t 0";
+                        p.StartInfo = startInfo;
+
+                        p.Start();
+
+                        break;
+                    case MessageBoxResult.No:
+                        break;
+                }
             }
             else
             {
-                PingableLable.Content = "Nothing Entered";
-                PingableLable.Foreground = new SolidColorBrush(Colors.Red);
+
             }
+
+
         }
 
         private void ContinuePing_Click(object sender, RoutedEventArgs e)
         {
             var machine = MachineIdTextBox.Text;
-            if (machine != null && machine.Length > 0)
-            {
-                Process.Start("ping.exe", $"-t {machine}");
-            }
-            else
-            {
-                PingableLable.Content = "Nothing Entered";
-                PingableLable.Foreground = new SolidColorBrush(Colors.Red);
-            }
+
+            Process.Start("ping.exe", $"-t {machine}");
+
 
         }
 
-
-        private void IsPingable()
+        private void RDPOpen_Click(object sender, RoutedEventArgs e)
         {
-            // set display to show running
-            UserLabel.Content = "N/A";
-            PingableLable.Content = "RUNNING";
-            PingableLable.Foreground = new SolidColorBrush(Colors.Yellow);
+            string buttonName = (sender as Button).Name;
+            string m = MachineIdTextBox.Text;
 
-            // test ping 
-            Ping ping = new Ping();
-            ping.PingCompleted += new PingCompletedEventHandler(PingCompletedCallback);
-            byte[] buffer = Encoding.ASCII.GetBytes("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
-            PingOptions options = new PingOptions(64, true);
-            AutoResetEvent waiter = new AutoResetEvent(false);
-
-            string machineName = MachineIdTextBox.Text;
-
-            if (machineName != null && machineName.Length != 0)
+            switch (buttonName)
             {
-                ping.SendAsync(machineName, 1000, buffer, options, waiter);
-            }
-            else
-            {
-                UserLabel.Content = "N/A";
-                PingableLable.Content = "Nothing Entered";
-                PingableLable.Foreground = new SolidColorBrush(Colors.Red);
-            }
-        }
-
-        private void PingCompletedCallback(object sender, PingCompletedEventArgs e)
-        {
-            // If the operation was canceled, display a message to the user.
-            if (e.Cancelled)
-            {
-                Console.WriteLine("Ping canceled.");
-
-                // Let the main thread resume.
-                // UserToken is the AutoResetEvent object that the main thread
-                // is waiting for.
-                ((AutoResetEvent)e.UserState).Set();
-            }
-
-            // If an error occurred, display the exception to the user.
-            if (e.Error != null)
-            {
-                Console.WriteLine("Ping failed:");
-                Console.WriteLine(e.Error.ToString());
-
-                // Let the main thread resume.
-                ((AutoResetEvent)e.UserState).Set();
-            }
-
-
-
-            PingReply reply = e.Reply;
-
-            DisplayReply(reply);
-
-            // Let the main thread resume.
-            ((AutoResetEvent)e.UserState).Set();
-        }
-
-
-        private void DisplayReply(PingReply reply)
-        {
-            if (reply == null)
-            {
-                UserLabel.Content = "N/A";
-                PingableLable.Content = "FALSE PING";
-                PingableLable.Foreground = new SolidColorBrush(Colors.Red);
-                return;
-            }
-
-            if (reply.Status == IPStatus.Success)
-            {
-
-                string machineName = MachineIdTextBox.Text;
-
-                GetUser(machineName); // get user info from computer. 
-                GetUptime(machineName); // get computer uptime
-
-
-                PingableLable.Content = "PING";
-                PingableLable.Foreground = new SolidColorBrush(Colors.Green);
-            }
-        }
-
-        private void GetUser(string machineName)
-        {
-
-            string location = @"SOFTWARE\Microsoft\Windows\CurrentVersion\Authentication\LogonUI";
-            var registryView = Environment.Is64BitOperatingSystem ? RegistryView.Registry64 : RegistryView.Registry32;
-
-            try
-            {
-                using (var hive = RegistryKey.OpenRemoteBaseKey(RegistryHive.LocalMachine, machineName, registryView))
-                {
-                    using (var key = hive.OpenSubKey(location))
+                case "SCCM":
+                    RDPHelper.SccmHelper(m);
+                    break;
+                case "Goverlan":
+                    RDPHelper.GoverlanHelper(m);
+                    break;
+                case "VNC":
+                    if (_vncOption == "GoverlanVNC")
                     {
-                        var item = key.GetValue("LastLoggedOnUser");
-                        string itemValue = item == null ? "No Logon Found" : item.ToString();
-                        UserLabel.Content = itemValue;
+                        RDPHelper.GoverlanVNCHelper(m);
                     }
-                }
-            }
-            catch
-            {
-                UserLabel.Content = "No Logon Found";
-            }
+                    else if (_vncOption == "Ultra")
+                    {
+                        RDPHelper.VNCHelper(m, vncScreenSize);
+                    }
+                    break;
+                case "RDP":
+                    RDPHelper.RdpHelper(m);
+                    break;
+                case "BigFix":
+                    RDPHelper.BigFixHelper();
+                    break;
 
-
+                default:
+                    MessageBox.Show("How did you do this?");
+                    break;
+            }
         }
 
-        private void GetUptime(string machineName)
+        #endregion
+
+
+        #region Other Functions
+        private void ClearDisplay()
         {
-            var scope = new ManagementScope(string.Format(@$"\\{machineName}\root\cimv2"));
-            scope.Connect();
-
-            var query = new ObjectQuery("SELECT LastBootUpTime FROM Win32_OperatingSystem");
-
-            var searcher = new ManagementObjectSearcher(scope, query);
-
-            var firstResult = searcher.Get().OfType<ManagementObject>().First();
-
-            UpTimeLabel.Content = ManagementDateTimeConverter.ToDateTime(firstResult["LastBootUpTime"].ToString());
+            MachineIdTextBox.Text = "";
+            UserLabel.Content = "?";
+            DnsLabel.Content = "?";
+            UpTimeLabel.Content = "?";
         }
+
+
+        #endregion Background stuff
+
+
+        #region BackGroundWorker
+        private void GetSignedInUSer_Work(object sender, DoWorkEventArgs e)
+        {
+
+            // set content to results 
+            Dispatcher.Invoke(() =>
+            {
+                UserLabel.Content = NetworkHelper.GetUser(MachineIdTextBox.Text).Replace(@"NGHS\", "").Replace(" ", ""); ; // get user info from computer
+
+            });
+
+        }
+
+        private void GetMachineUptime_Work(object sender, DoWorkEventArgs e)
+        {
+
+            Dispatcher.Invoke(() =>
+            {
+                UpTimeLabel.Content = NetworkHelper.GetUptime(MachineIdTextBox.Text); // get computer uptime
+            });
+        }
+
+
+
+        #endregion
 
 
     }
-
 
 }
