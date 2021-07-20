@@ -37,45 +37,41 @@ namespace LoggedInUsers
         private async void SearchAndOpenComputer()
         {
 
+            string machineName = NetworkHelper.GetDns(MachineIdTextBox.Text.Replace(" ", "").ToLower());
+            DnsLabel.Content = machineName;
+
             if (MachineIdTextBox.Text != null && MachineIdTextBox.Text != "")
             {
 
-                string machineName = NetworkHelper.GetDns(MachineIdTextBox.Text.Replace(" ", "").ToLower());
-                DnsLabel.Content = machineName;
 
-                if (await NetworkHelper.IsPingable(machineName))
+                char[] machine = machineName.ToCharArray(); // resolve the dns of the computer
+
+                string shortName = $"{machine[6]}{machine[7]}";
+
+                if (shortName.Equals("mc") || shortName.Equals("tc"))
                 {
-                    char[] machine = machineName.ToCharArray(); // resolve the dns of the computer
-
-                    string shortName = $"{machine[6]}{machine[7]}";
-
-                    if (shortName.Equals("mc") || shortName.Equals("tc"))
+                    UserLabel.Content = "NGHSPASS";
+                    if (_vncOption == "GoverlanVNC")
                     {
-                        UserLabel.Content = "Thin Client";
-                        if (_vncOption == "GoverlanVNC")
-                        {
-                            RDPHelper.GoverlanVNCHelper(machineName);
-                        }
-                        else if (_vncOption == "Ultra")
-                        {
-                            RDPHelper.VNCHelper(machineName, vncScreenSize);
-                        }
+                        RDPHelper.GoverlanVNCHelper(machineName);
                     }
-                    else
+                    else if (_vncOption == "Ultra")
                     {
-                        RDPHelper.GoverlanHelper(machineName);
-                        bgWorker.RunWorkerAsync(); // find the user background task
+                        RDPHelper.VNCHelper(machineName, vncScreenSize);
                     }
                 }
                 else
                 {
-                    DnsLabel.Content = "Computer does not ping.";
+                    RDPHelper.GoverlanHelper(machineName);
+                    bgWorker.RunWorkerAsync(); // find the user background task
                 }
             }
             else
             {
-                DnsLabel.Content = "Nothing entered.";
+                DnsLabel.Content = "Computer does not ping.";
             }
+
+
         }
 
         private void ComputerSearch_KeyDown(object sender, KeyEventArgs e)
