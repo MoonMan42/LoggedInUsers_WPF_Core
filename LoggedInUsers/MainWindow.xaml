@@ -80,7 +80,7 @@
             <Button Content="Restart" Grid.Column="0" Grid.Row="5" 
                 Background="IndianRed"
                 Click="RestartComputer_Click" Margin="10"/>
-            <Button x:Name="SCCM" Content="SCCM" Grid.Column="1" Grid.Row="5" 
+            <Button x:Name="Beyond" Content="Beyond" Grid.Column="1" Grid.Row="5" 
                 Click="RDPOpen_Click" Margin="10"/>
 
 

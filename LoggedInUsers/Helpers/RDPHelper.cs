@@ -80,6 +80,30 @@ namespace LoggedInUsers.Helpers
 
             Process.Start(info);
         }
+
+        public static void BeyondJumpHelper(string machine)
+        {
+            ProcessStartInfo info = new ProcessStartInfo();
+            info.FileName = "cmd.exe";
+            info.CreateNoWindow = true;
+
+            // full clients 
+            info.Arguments = $"/C \"\"C:\\Program Files\\bomgar\\Representative Console\\nghs.beyondtrustcloud.com\\bomgar-rep.exe\" --run-script \"action=push_and_start_remote&jumpoint=VMASBTRUST&target={machine}\"\"";
+
+            Process.Start(info);
+        }
+
+        public static void BeyondVNCHelper(string machine)
+        {
+            ProcessStartInfo info = new ProcessStartInfo();
+            info.FileName = "cmd.exe";
+            info.CreateNoWindow = true;
+
+            // thin clients
+            info.Arguments = $"/C \"\"C:\\Program Files\\bomgar\\Representative Console\\nghs.beyondtrustcloud.com\\bomgar-rep.exe\" --run-script \"action=start_vnc_session&target={machine}&jumpoint=VMASBTRUST\"\"";
+
+            Process.Start(info);
+        }
     }
 
 }

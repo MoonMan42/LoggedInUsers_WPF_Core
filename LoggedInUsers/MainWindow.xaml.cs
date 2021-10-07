@@ -50,7 +50,7 @@ namespace LoggedInUsers
 
                 if (shortName.Equals("mc") || shortName.Equals("tc"))
                 {
-                    UserLabel.Content = "NGHSPASS";
+                    UserLabel.Content = "nghspass";
                     if (_vncOption == "GoverlanVNC")
                     {
                         RDPHelper.GoverlanVNCHelper(machineName);
@@ -185,27 +185,22 @@ namespace LoggedInUsers
                 string machineName = NetworkHelper.GetDns(MachineIdTextBox.Text.Replace(" ", "").ToLower());
                 DnsLabel.Content = machineName;
 
-                if (await NetworkHelper.IsPingable(machineName))
+
+                char[] machine = machineName.ToCharArray(); // resolve the dns of the computer
+
+                string shortName = $"{machine[6]}{machine[7]}";
+
+                if (shortName.Equals("mc") || shortName.Equals("tc"))
                 {
-                    char[] machine = machineName.ToCharArray(); // resolve the dns of the computer
+                    UserLabel.Content = "Thin Client";
 
-                    string shortName = $"{machine[6]}{machine[7]}";
-
-                    if (shortName.Equals("mc") || shortName.Equals("tc"))
-                    {
-                        UserLabel.Content = "Thin Client";
-
-                    }
-                    else
-                    {
-
-                        bgWorker.RunWorkerAsync(); // find the user background task
-                    }
                 }
                 else
                 {
-                    DnsLabel.Content = "Computer does not ping.";
+
+                    bgWorker.RunWorkerAsync(); // find the user background task
                 }
+
             }
             else
             {
@@ -262,11 +257,6 @@ namespace LoggedInUsers
                         break;
                 }
             }
-            else
-            {
-
-            }
-
 
         }
 
@@ -282,12 +272,20 @@ namespace LoggedInUsers
         private void RDPOpen_Click(object sender, RoutedEventArgs e)
         {
             string buttonName = (sender as Button).Name;
-            string m = MachineIdTextBox.Text;
+            string m = MachineIdTextBox.Text.Replace(" ", "");
 
             switch (buttonName)
             {
-                case "SCCM":
-                    RDPHelper.SccmHelper(m);
+                case "Beyond":
+                    string shortName = $"{m[6]}{m[7]}".ToLower();
+
+                    if (shortName.Equals("mc") || shortName.Equals("tc"))
+                    {
+                        RDPHelper.BeyondVNCHelper(m); // vnc
+                    }
+                    else
+                        RDPHelper.BeyondJumpHelper(m); // jump connect 
+
                     break;
                 case "Goverlan":
                     RDPHelper.GoverlanHelper(m);
