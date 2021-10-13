@@ -3,7 +3,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:LoggedInUsers"
+        
         mc:Ignorable="d"
         ResizeMode="CanMinimize"
         Background="DarkGray"
@@ -16,6 +16,10 @@
             </MenuItem>
             
             <MenuItem Header="_Edit">
+                <MenuItem Header ="RPD Options">
+                    <MenuItem Name="GoverlanRDP" Header="Goverlan" Click="RDPOption_Click"/>
+                    <MenuItem Name="BeyondRDP" Header="Beyond" Click="RDPOption_Click"/>
+                </MenuItem>
                 <MenuItem Header="VNC Option">
                     <MenuItem Name="Ultra" Header="Ultra" Click="VNCOption_Click"/>
                     <MenuItem Name="GoverlanVNC" Header="Goverlan VNC" Click="VNCOption_Click"/>

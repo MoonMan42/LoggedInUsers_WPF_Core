@@ -13,6 +13,7 @@ namespace LoggedInUsers
     {
         private int vncScreenSize;
         private string _vncOption;
+        private string _rdpOption;
 
         private BackgroundWorker bgWorker = new BackgroundWorker();
 
@@ -25,6 +26,7 @@ namespace LoggedInUsers
             _vncOption = Settings.Default.VncOption;
 
             // check the related fields
+            LoadRdpSelectedOption();
             LoadVNCScreenSize();
             LoadVNCSelectedOption();
 
@@ -36,13 +38,13 @@ namespace LoggedInUsers
 
 
 
-        private void ComputerSearch()
+        private void ComputerSearch(bool doOpenConnection = false)
         {
             // clear recent results 
             ClearDisplay();
 
             // remove empty space and upercase the input
-            string s = MachineIdTextBox.Text.Replace(" ", "").ToUpper();
+            string s = MachineIdTextBox.Text.Replace(" ", "").ToLower();
 
             // check if machine text box has something in it. 
             if (MachineIdTextBox.Text != null && MachineIdTextBox.Text != "")
@@ -62,10 +64,52 @@ namespace LoggedInUsers
                     if (shortName.Equals("mc") || shortName.Equals("tc"))
                     {
                         UserLabel.Content = "nghspass";
+
+                        if (doOpenConnection)
+                        {
+                            // get chosen vnc option
+                            string vncOption = Settings.Default.VncOption;
+
+                            // connect to the computer
+                            switch (vncOption)
+                            {
+                                case "Ultra":
+                                    RDPHelper.VNCHelper(machineName, Settings.Default.VncScreenSize);
+                                    break;
+                                case "GoverlanVNC":
+                                    RDPHelper.GoverlanVNCHelper(machineName);
+                                    break;
+                                case "BeyondVNC":
+                                    RDPHelper.BeyondVNCHelper(machineName);
+                                    break;
+                            }
+                        }
+                    }
+                    else if (shortName.Equals("pc") || shortName.Equals("lt"))
+                    {
+                        bgWorker.RunWorkerAsync(); // find the user background task
+
+                        if (doOpenConnection)
+                        {
+                            // start in chosen rdp session
+                            string rpdOption = Settings.Default.RdpOption;
+
+                            // automatically RDP to machine
+                            switch (rpdOption)
+                            {
+                                case "GoverlanRDP":
+                                    RDPHelper.GoverlanHelper(machineName);
+                                    break;
+                                case "BeyondRDP":
+                                    RDPHelper.BeyondJumpHelper(machineName);
+                                    break;
+                            }
+                        }
+
                     }
                     else
                     {
-                        bgWorker.RunWorkerAsync(); // find the user background task
+                        UserLabel.Content = "Not Sure :(";
                     }
                 }
             }
@@ -83,6 +127,43 @@ namespace LoggedInUsers
         }
 
         #region MenuHeader
+
+
+        private void RDPOption_Click(object sender, RoutedEventArgs e)
+        {
+            //reserve the item selected
+            MenuItem m = sender as MenuItem;
+
+            // clear all values
+            GoverlanRDP.IsChecked = false;
+            BeyondRDP.IsChecked = false;
+
+            // check the option again
+            m.IsChecked = true;
+
+            // save settings
+            _rdpOption = m.Name;
+            Settings.Default.RdpOption = _rdpOption;
+            Settings.Default.Save();
+        }
+
+        private void VNCOption_Click(object sender, RoutedEventArgs e)
+        {
+            MenuItem m = sender as MenuItem;
+
+            // clear all values
+            GoverlanVNC.IsChecked = false;
+            Ultra.IsChecked = false;
+
+            // check the option again 
+            m.IsChecked = true;
+
+            // save settings
+            _vncOption = m.Name;
+            Settings.Default.VncOption = _vncOption;
+            Settings.Default.Save();
+        }
+
         private void VNCScreenSize_Click(object sender, RoutedEventArgs e)
         {
             // get the checked option
@@ -104,26 +185,46 @@ namespace LoggedInUsers
             Settings.Default.Save();
         }
 
-        private void VNCOption_Click(object sender, RoutedEventArgs e)
-        {
-            MenuItem m = sender as MenuItem;
-
-            // clear all values
-            GoverlanVNC.IsChecked = false;
-            Ultra.IsChecked = false;
-
-            // check the option again and save
-            m.IsChecked = true;
-
-            // save settings
-            _vncOption = m.Name;
-            Settings.Default.VncOption = _vncOption;
-            Settings.Default.Save();
-        }
-
         private void Close_Click(object sender, RoutedEventArgs e)
         {
             Close();
+        }
+
+
+        private void LoadRdpSelectedOption()
+        {
+            switch (_rdpOption)
+            {
+                case "GoverlanRDP":
+                    GoverlanRDP.IsChecked = true;
+                    break;
+                case "BeyondRDP":
+                    BeyondRDP.IsChecked = true;
+                    break;
+                default:
+                    GoverlanRDP.IsChecked = true;
+                    break;
+
+            }
+        }
+
+        private void LoadVNCSelectedOption()
+        {
+            switch (_vncOption)
+            {
+                case "GoverlanVNC":
+                    GoverlanVNC.IsChecked = true;
+                    break;
+                case "Ultra":
+                    Ultra.IsChecked = true;
+                    break;
+                case "BeyondVNC":
+                    BeyondVNC.IsChecked = true;
+                    break;
+                default:
+                    GoverlanVNC.IsChecked = true;
+                    break;
+            }
         }
 
         private void LoadVNCScreenSize()
@@ -152,22 +253,6 @@ namespace LoggedInUsers
             {
                 vncScreenSize = 85;
                 Vnc85.IsChecked = true;
-            }
-        }
-
-        private void LoadVNCSelectedOption()
-        {
-            switch (_vncOption)
-            {
-                case "GoverlanVNC":
-                    GoverlanVNC.IsChecked = true;
-                    break;
-                case "Ultra":
-                    Ultra.IsChecked = true;
-                    break;
-                default:
-                    GoverlanVNC.IsChecked = true;
-                    break;
             }
         }
         #endregion
@@ -325,6 +410,7 @@ namespace LoggedInUsers
                 UpTimeLabel.Content = NetworkHelper.GetUptime(MachineIdTextBox.Text); // get computer uptime
             });
         }
+
 
 
 

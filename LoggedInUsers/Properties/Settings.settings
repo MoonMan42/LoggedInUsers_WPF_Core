@@ -8,5 +8,8 @@
     <Setting Name="VncOption" Type="System.String" Scope="User">
       <Value Profile="(Default)">GoverlanVNC</Value>
     </Setting>
+    <Setting Name="RdpOption" Type="System.String" Scope="User">
+      <Value Profile="(Default)">GoverlanRDP</Value>
+    </Setting>
   </Settings>
 </SettingsFile>
