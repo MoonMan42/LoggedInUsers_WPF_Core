@@ -4,7 +4,6 @@ using System.Net.NetworkInformation;
 using System.Management;
 using System.Linq;
 using System.Net;
-using System.Threading.Tasks;
 
 namespace LoggedInUsers.Helpers
 {

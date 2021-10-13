@@ -4,7 +4,10 @@ namespace LoggedInUsers.Helpers
 {
     public static class RDPHelper
     {
-
+        /// <summary>
+        /// Opens Goverlan
+        /// </summary>
+        /// <param name="machine"></param>
         public static void GoverlanHelper(string machine)
         {
             ProcessStartInfo info = new ProcessStartInfo();
@@ -17,6 +20,10 @@ namespace LoggedInUsers.Helpers
             Process.Start(info);
         }
 
+        /// <summary>
+        /// Opens GoverlanVNC (Need to enter password mannually)
+        /// </summary>
+        /// <param name="machine"></param>
         public static void GoverlanVNCHelper(string machine)
         {
             ProcessStartInfo info = new ProcessStartInfo();
@@ -27,6 +34,11 @@ namespace LoggedInUsers.Helpers
 
         }
 
+        /// <summary>
+        /// Opens VNC Ultra
+        /// </summary>
+        /// <param name="machine"></param>
+        /// <param name="size"></param>
         public static void VNCHelper(string machine, int size)
         {
             ProcessStartInfo info = new ProcessStartInfo();
@@ -39,6 +51,10 @@ namespace LoggedInUsers.Helpers
             Process.Start(info);
         }
 
+        /// <summary>
+        /// Opens MSTSC
+        /// </summary>
+        /// <param name="machine"></param>
         public static void RdpHelper(string machine)
         {
             ProcessStartInfo info = new ProcessStartInfo();
@@ -57,6 +73,9 @@ namespace LoggedInUsers.Helpers
             Process.Start(info);
         }
 
+        /// <summary>
+        /// Opens BigFix, does not put the computer name in automatically
+        /// </summary>
         public static void BigFixHelper()
         {
             ProcessStartInfo info = new ProcessStartInfo();
@@ -69,6 +88,10 @@ namespace LoggedInUsers.Helpers
             Process.Start(info);
         }
 
+        /// <summary>
+        /// Opens SCCM (Not really used much)
+        /// </summary>
+        /// <param name="machine"></param>
         public static void SccmHelper(string machine)
         {
             ProcessStartInfo info = new ProcessStartInfo();
@@ -81,6 +104,10 @@ namespace LoggedInUsers.Helpers
             Process.Start(info);
         }
 
+        /// <summary>
+        /// opens Beyond Jump
+        /// </summary>
+        /// <param name="machine"></param>
         public static void BeyondJumpHelper(string machine)
         {
             ProcessStartInfo info = new ProcessStartInfo();
@@ -93,6 +120,11 @@ namespace LoggedInUsers.Helpers
             Process.Start(info);
         }
 
+
+        /// <summary>
+        /// opens Beyond VNC
+        /// </summary>
+        /// <param name="machine"></param>
         public static void BeyondVNCHelper(string machine)
         {
             ProcessStartInfo info = new ProcessStartInfo();

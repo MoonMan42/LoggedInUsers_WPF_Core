@@ -34,12 +34,14 @@ namespace LoggedInUsers
             bgWorker.DoWork += GetMachineUptime_Work;
         }
 
-        private void SearchAndOpenComputer(bool openConnection)
+
+
+        private void ComputerSearch()
         {
             // clear recent results 
             ClearResutls();
 
-
+            // remove empty space and upercase the input
             string s = MachineIdTextBox.Text.Replace(" ", "").ToUpper();
 
             // check if machine text box has something in it. 
@@ -56,42 +58,17 @@ namespace LoggedInUsers
 
                     string shortName = $"{machine[6]}{machine[7]}";
 
-                    if (openConnection)
+                    // find if computer is thin client or full client 
+                    if (shortName.Equals("mc") || shortName.Equals("tc"))
                     {
-                        if (shortName.Equals("mc") || shortName.Equals("tc"))
-                        {
-                            UserLabel.Content = "nghspass";
-
-                            if (_vncOption == "GoverlanVNC")
-                            {
-                                RDPHelper.GoverlanVNCHelper(machineName);
-                            }
-                            else if (_vncOption == "Ultra")
-                            {
-                                RDPHelper.VNCHelper(machineName, vncScreenSize);
-                            }
-
-                        }
-                        else
-                        {
-                            RDPHelper.GoverlanHelper(machineName);
-
-                            bgWorker.RunWorkerAsync(); // find the user background task
-                        }
+                        UserLabel.Content = "nghspass";
+                    }
+                    else
+                    {
+                        bgWorker.RunWorkerAsync(); // find the user background task
                     }
                 }
-
-                else
-                {
-                    DnsLabel.Content = "Does not ping";
-                }
             }
-            else
-            {
-                DnsLabel.Content = "No computer, Try again?";
-            }
-
-
         }
 
         private void ClearResutls()
@@ -106,7 +83,8 @@ namespace LoggedInUsers
 
             if (e.Key == Key.Enter)
             {
-                SearchAndOpenComputer(true);
+                //SearchAndOpenComputer(true);
+                ComputerSearch();
             }
 
         }
@@ -202,9 +180,10 @@ namespace LoggedInUsers
         #endregion
 
         #region Buttons
-        private async void ComputerSearch_Click(object sender, RoutedEventArgs e)
+        private void ComputerSearch_Click(object sender, RoutedEventArgs e)
         {
-            SearchAndOpenComputer(false);
+            //SearchAndOpenComputer(false);
+            ComputerSearch();
         }
 
         private void Clear_Click(object sender, RoutedEventArgs e)
@@ -297,6 +276,10 @@ namespace LoggedInUsers
                     else if (_vncOption == "Ultra")
                     {
                         RDPHelper.VNCHelper(m, vncScreenSize);
+                    }
+                    else if (_vncOption == "BeyondVNC")
+                    {
+                        RDPHelper.BeyondVNCHelper(m);
                     }
                     break;
                 case "RDP":

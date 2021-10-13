@@ -19,6 +19,7 @@
                 <MenuItem Header="VNC Option">
                     <MenuItem Name="Ultra" Header="Ultra" Click="VNCOption_Click"/>
                     <MenuItem Name="GoverlanVNC" Header="Goverlan VNC" Click="VNCOption_Click"/>
+                    <MenuItem Name="BeyondVNC" Header="Beyond VNC" Click="VNCOption_Click"/>
                 </MenuItem>
                 <MenuItem x:Name="ScreenSizeOptions" Header="VNC" >
                     <MenuItem Name="Vnc100" Header="100%" IsCheckable="True" Click="VNCScreenSize_Click"/>
