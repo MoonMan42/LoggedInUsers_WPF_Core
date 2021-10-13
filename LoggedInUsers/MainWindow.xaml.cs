@@ -34,44 +34,71 @@ namespace LoggedInUsers
             bgWorker.DoWork += GetMachineUptime_Work;
         }
 
-        private async void SearchAndOpenComputer()
+        private void SearchAndOpenComputer(bool openConnection)
         {
+            // clear recent results 
+            ClearResutls();
 
-            string machineName = NetworkHelper.GetDns(MachineIdTextBox.Text.Replace(" ", "").ToLower());
-            DnsLabel.Content = machineName;
 
+            string s = MachineIdTextBox.Text.Replace(" ", "").ToUpper();
+
+            // check if machine text box has something in it. 
             if (MachineIdTextBox.Text != null && MachineIdTextBox.Text != "")
             {
-
-
-                char[] machine = machineName.ToCharArray(); // resolve the dns of the computer
-
-                string shortName = $"{machine[6]}{machine[7]}";
-
-                if (shortName.Equals("mc") || shortName.Equals("tc"))
+                // if s(computer)pings 
+                if (NetworkHelper.IsPingable(s))
                 {
-                    UserLabel.Content = "nghspass";
-                    if (_vncOption == "GoverlanVNC")
+                    // resolve the dns of the computer 
+                    string machineName = NetworkHelper.GetDns(s);
+                    DnsLabel.Content = machineName;
+
+                    char[] machine = machineName.ToCharArray();
+
+                    string shortName = $"{machine[6]}{machine[7]}";
+
+                    if (openConnection)
                     {
-                        RDPHelper.GoverlanVNCHelper(machineName);
-                    }
-                    else if (_vncOption == "Ultra")
-                    {
-                        RDPHelper.VNCHelper(machineName, vncScreenSize);
+                        if (shortName.Equals("mc") || shortName.Equals("tc"))
+                        {
+                            UserLabel.Content = "nghspass";
+
+                            if (_vncOption == "GoverlanVNC")
+                            {
+                                RDPHelper.GoverlanVNCHelper(machineName);
+                            }
+                            else if (_vncOption == "Ultra")
+                            {
+                                RDPHelper.VNCHelper(machineName, vncScreenSize);
+                            }
+
+                        }
+                        else
+                        {
+                            RDPHelper.GoverlanHelper(machineName);
+
+                            bgWorker.RunWorkerAsync(); // find the user background task
+                        }
                     }
                 }
+
                 else
                 {
-                    RDPHelper.GoverlanHelper(machineName);
-                    bgWorker.RunWorkerAsync(); // find the user background task
+                    DnsLabel.Content = "Does not ping";
                 }
             }
             else
             {
-                DnsLabel.Content = "Computer does not ping.";
+                DnsLabel.Content = "No computer, Try again?";
             }
 
 
+        }
+
+        private void ClearResutls()
+        {
+            UserLabel.Content = "";
+            UserLabel.Content = "";
+            UpTimeLabel.Content = "";
         }
 
         private void ComputerSearch_KeyDown(object sender, KeyEventArgs e)
@@ -79,7 +106,7 @@ namespace LoggedInUsers
 
             if (e.Key == Key.Enter)
             {
-                SearchAndOpenComputer();
+                SearchAndOpenComputer(true);
             }
 
         }
@@ -177,35 +204,7 @@ namespace LoggedInUsers
         #region Buttons
         private async void ComputerSearch_Click(object sender, RoutedEventArgs e)
         {
-
-            //SearchAndOpenComputer();
-            if (MachineIdTextBox.Text != null && MachineIdTextBox.Text != "")
-            {
-
-                string machineName = NetworkHelper.GetDns(MachineIdTextBox.Text.Replace(" ", "").ToLower());
-                DnsLabel.Content = machineName;
-
-
-                char[] machine = machineName.ToCharArray(); // resolve the dns of the computer
-
-                string shortName = $"{machine[6]}{machine[7]}";
-
-                if (shortName.Equals("mc") || shortName.Equals("tc"))
-                {
-                    UserLabel.Content = "Thin Client";
-
-                }
-                else
-                {
-
-                    bgWorker.RunWorkerAsync(); // find the user background task
-                }
-
-            }
-            else
-            {
-                DnsLabel.Content = "Nothing entered.";
-            }
+            SearchAndOpenComputer(false);
         }
 
         private void Clear_Click(object sender, RoutedEventArgs e)

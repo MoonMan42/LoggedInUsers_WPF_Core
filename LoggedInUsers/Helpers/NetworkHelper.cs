@@ -16,13 +16,13 @@ namespace LoggedInUsers.Helpers
         /// </summary>
         /// <param name="computer"></param>
         /// <returns></returns>
-        public static async Task<bool> IsPingable(string computer)
+        public static bool IsPingable(string computer)
         {
             Ping ping = new Ping();
 
             try
             {
-                PingReply reply = ping.Send(computer, 1000);
+                PingReply reply = ping.Send(computer, 800);
 
                 if (reply.Status == IPStatus.Success)
                 {
