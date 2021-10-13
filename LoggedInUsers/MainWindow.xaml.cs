@@ -39,7 +39,7 @@ namespace LoggedInUsers
         private void ComputerSearch()
         {
             // clear recent results 
-            ClearResutls();
+            ClearDisplay();
 
             // remove empty space and upercase the input
             string s = MachineIdTextBox.Text.Replace(" ", "").ToUpper();
@@ -69,13 +69,6 @@ namespace LoggedInUsers
                     }
                 }
             }
-        }
-
-        private void ClearResutls()
-        {
-            UserLabel.Content = "";
-            UserLabel.Content = "";
-            UpTimeLabel.Content = "";
         }
 
         private void ComputerSearch_KeyDown(object sender, KeyEventArgs e)
@@ -302,9 +295,9 @@ namespace LoggedInUsers
         private void ClearDisplay()
         {
             MachineIdTextBox.Text = "";
-            UserLabel.Content = "?";
-            DnsLabel.Content = "?";
-            UpTimeLabel.Content = "?";
+            UserLabel.Content = "";
+            DnsLabel.Content = "";
+            UpTimeLabel.Content = "";
         }
 
 
