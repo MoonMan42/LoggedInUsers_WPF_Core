@@ -85,7 +85,7 @@ namespace LoggedInUsers
                             }
                         }
                     }
-                    else if (shortName.Equals("pc") || shortName.Equals("lt"))
+                    else
                     {
                         bgWorker.RunWorkerAsync(); // find the user background task
 
@@ -107,10 +107,7 @@ namespace LoggedInUsers
                         }
 
                     }
-                    else
-                    {
-                        UserLabel.Content = "Not Sure :(";
-                    }
+
                 }
             }
         }
@@ -379,7 +376,6 @@ namespace LoggedInUsers
         #region Other Functions
         private void ClearDisplay()
         {
-            MachineIdTextBox.Text = "";
             UserLabel.Content = "";
             DnsLabel.Content = "";
             UpTimeLabel.Content = "";
